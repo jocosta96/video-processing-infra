@@ -65,29 +65,6 @@ jobs:
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
           role-duration-seconds: 3600
 
-      - name: Add IP to EKS Security Group
-        working-directory: .github
-        run: |
-          chmod +x ./scripts/eks_whitelist.sh
-          ./scripts/eks_whitelist.sh video-processing us-east-1
-
-      - name: Verify AWS Credentials
-        run: |
-          echo "Testing AWS credentials..."
-          aws sts get-caller-identity
-          echo "AWS credentials are valid!"
-
-      - name: Debug Terraform Variables
-        run: |
-          echo "=== All TF_VAR Environment Variables ==="
-          env | grep TF_VAR | sort || echo "❌ No TF_VAR variables found!"
-          echo ""
-          if [ -z "$TF_VAR_BACKEND_S3_BUCKET_NAME" ]; then
-            echo "❌ BACKEND_S3_BUCKET_NAME is not set!"
-          else
-            echo "✅ BACKEND_S3_BUCKET_NAME is set"
-          fi
-
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
