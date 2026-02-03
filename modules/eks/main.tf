@@ -25,8 +25,9 @@ resource "aws_eks_cluster" "eks_cluster" {
       aws_security_group.eks_node_sg.id
     ]
     endpoint_private_access = true
-    endpoint_public_access  = length(local.all_allowed_cidrs) > 0
-    public_access_cidrs     = length(local.all_allowed_cidrs) > 0 ? local.all_allowed_cidrs : []
+    #acessible trough bastion
+    endpoint_public_access  = false
+    public_access_cidrs     = []
   }
 
   tags = local.eks_tags
