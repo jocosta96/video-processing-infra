@@ -1,16 +1,16 @@
 output "database_endpoint" {
   description = "RDS database endpoint address"
-  value       = aws_db_instance.ordering_database.address
+  value       = aws_db_instance.database.address
 }
 
 output "database_port" {
   description = "RDS database port"
-  value       = aws_db_instance.ordering_database.port
+  value       = aws_db_instance.database.port
 }
 
 output "database_name" {
   description = "RDS database name"
-  value       = aws_db_instance.ordering_database.db_name
+  value       = aws_db_instance.database.db_name
 }
 
 output "ssm_path_prefix" {

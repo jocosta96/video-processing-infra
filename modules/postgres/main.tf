@@ -13,7 +13,7 @@ resource "random_password" "db_password" {
 }
 
 # Create RDS PostgreSQL database
-resource "aws_db_instance" "ordering_database" {
+resource "aws_db_instance" "database" {
   identifier = "${var.service}-postgres"
 
   # Engine settings
