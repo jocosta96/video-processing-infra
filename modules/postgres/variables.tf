@@ -33,13 +33,13 @@ variable "db_engine_version" {
 variable "db_name" {
   description = "The name of the database"
   type        = string
-  default     = "ordering_system"
+  default     = "system"
 }
 
 variable "db_username" {
   description = "The username for the database"
   type        = string
-  default     = "ordering_admin"
+  default     = "admin"
 }
 
 variable "db_port" {

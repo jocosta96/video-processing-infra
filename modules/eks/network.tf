@@ -10,7 +10,7 @@ data "http" "my_ip" {
 data "aws_eks_cluster" "cluster" {
   name = "${var.service}-eks-cluster"
   depends_on = [
-    aws_eks_cluster.ordering_eks_cluster
+    aws_eks_cluster.eks_cluster
   ]
 }
 
@@ -36,7 +36,7 @@ locals {
 # Secutiry Groups
 ############################
 
-resource "aws_security_group" "ordering_eks_cluster_sg" {
+resource "aws_security_group" "eks_cluster_sg" {
   name_prefix = "${var.service}-eks-cluster-"
   vpc_id      = var.VPC_ID
 
@@ -45,7 +45,7 @@ resource "aws_security_group" "ordering_eks_cluster_sg" {
   })
 }
 
-resource "aws_security_group" "ordering_eks_node_sg" {
+resource "aws_security_group" "eks_node_sg" {
   name_prefix = "${var.service}-eks-node-"
   vpc_id      = var.VPC_ID
 
@@ -70,7 +70,7 @@ resource "aws_security_group" "nlb_sg" {
 # NODE > NLB
 resource "aws_vpc_security_group_ingress_rule" "nlb_node_ingress" {
   security_group_id            = aws_security_group.nlb_sg.id
-  referenced_security_group_id = aws_security_group.ordering_eks_node_sg.id
+  referenced_security_group_id = aws_security_group.eks_node_sg.id
   ip_protocol                  = "-1"
 
   tags = merge(local.network_tags, { name = "${var.service}-node-to-nlb" })
@@ -79,7 +79,7 @@ resource "aws_vpc_security_group_ingress_rule" "nlb_node_ingress" {
 # CLUSTER > NLB
 resource "aws_vpc_security_group_ingress_rule" "nlb_cluster_ingress" {
   security_group_id            = aws_security_group.nlb_sg.id
-  referenced_security_group_id = aws_security_group.ordering_eks_cluster_sg.id
+  referenced_security_group_id = aws_security_group.eks_cluster_sg.id
   ip_protocol                  = "-1"
 
   tags = merge(local.network_tags, { name = "${var.service}-cluster-to-nlb" })
@@ -98,7 +98,7 @@ resource "aws_vpc_security_group_ingress_rule" "nlb_bastion_ingress" {
 
 # BASTION > CLUSTER
 resource "aws_vpc_security_group_ingress_rule" "cluster_bastion_ingress" {
-  security_group_id            = aws_security_group.ordering_eks_cluster_sg.id
+  security_group_id            = aws_security_group.eks_cluster_sg.id
   referenced_security_group_id = var.bastion_security_group_id
   ip_protocol                  = "-1"
 
@@ -107,8 +107,8 @@ resource "aws_vpc_security_group_ingress_rule" "cluster_bastion_ingress" {
 
 # NODE > CLUSTER
 resource "aws_vpc_security_group_ingress_rule" "eks_cluster_from_nodes" {
-  security_group_id            = aws_security_group.ordering_eks_cluster_sg.id
-  referenced_security_group_id = aws_security_group.ordering_eks_node_sg.id
+  security_group_id            = aws_security_group.eks_cluster_sg.id
+  referenced_security_group_id = aws_security_group.eks_node_sg.id
   ip_protocol                  = "-1"
 
   tags = merge(local.network_tags, {
@@ -120,7 +120,7 @@ resource "aws_vpc_security_group_ingress_rule" "eks_cluster_from_nodes" {
 
 # BASTION > NODE
 resource "aws_vpc_security_group_ingress_rule" "node_bastion_ingress" {
-  security_group_id            = aws_security_group.ordering_eks_node_sg.id
+  security_group_id            = aws_security_group.eks_node_sg.id
   referenced_security_group_id = var.bastion_security_group_id
   ip_protocol                  = "-1"
 
@@ -130,8 +130,8 @@ resource "aws_vpc_security_group_ingress_rule" "node_bastion_ingress" {
 
 # CLUSTER > NODE
 resource "aws_vpc_security_group_ingress_rule" "eks_nodes_from_cluster" {
-  security_group_id            = aws_security_group.ordering_eks_node_sg.id
-  referenced_security_group_id = aws_security_group.ordering_eks_cluster_sg.id
+  security_group_id            = aws_security_group.eks_node_sg.id
+  referenced_security_group_id = aws_security_group.eks_cluster_sg.id
   ip_protocol                  = "-1"
 
   tags = merge(local.network_tags, {
@@ -142,8 +142,8 @@ resource "aws_vpc_security_group_ingress_rule" "eks_nodes_from_cluster" {
 
 # NODE > NODE
 resource "aws_vpc_security_group_ingress_rule" "eks_node_ingress_self" {
-  security_group_id            = aws_security_group.ordering_eks_node_sg.id
-  referenced_security_group_id = aws_security_group.ordering_eks_node_sg.id
+  security_group_id            = aws_security_group.eks_node_sg.id
+  referenced_security_group_id = aws_security_group.eks_node_sg.id
   ip_protocol                  = "-1"
 
   tags = merge(local.network_tags, {
@@ -153,7 +153,7 @@ resource "aws_vpc_security_group_ingress_rule" "eks_node_ingress_self" {
 
 # NLB > NODE
 resource "aws_vpc_security_group_ingress_rule" "nlb_to_node" {
-  security_group_id            = aws_security_group.ordering_eks_node_sg.id
+  security_group_id            = aws_security_group.eks_node_sg.id
   referenced_security_group_id = aws_security_group.nlb_sg.id
   ip_protocol                  = "-1"
 
@@ -179,7 +179,7 @@ resource "aws_vpc_security_group_ingress_rule" "nlb_to_eks_cluster" {
 
 # Allow current deployer IP for EKS API access
 resource "aws_vpc_security_group_ingress_rule" "eks_api_deployer" {
-  security_group_id = aws_security_group.ordering_eks_cluster_sg.id
+  security_group_id = aws_security_group.eks_cluster_sg.id
   cidr_ipv4         = local.deployer_cidr
   from_port         = 443
   to_port           = 443
@@ -193,7 +193,7 @@ resource "aws_vpc_security_group_ingress_rule" "eks_api_deployer" {
 resource "aws_ssm_parameter" "eks_security_group_id" {
   name  = "/${var.service}/eks/security-group-id"
   type  = "String"
-  value = aws_security_group.ordering_eks_cluster_sg.id
+  value = aws_security_group.eks_cluster_sg.id
 
   tags = {
     service = var.service
@@ -206,7 +206,7 @@ resource "aws_ssm_parameter" "eks_security_group_id" {
 resource "aws_vpc_security_group_ingress_rule" "eks_api_additional" {
   count = length(local.unique_allowed_cidrs)
 
-  security_group_id = aws_security_group.ordering_eks_cluster_sg.id
+  security_group_id = aws_security_group.eks_cluster_sg.id
   cidr_ipv4         = local.unique_allowed_cidrs[count.index]
   from_port         = 443
   to_port           = 443
@@ -221,7 +221,7 @@ resource "aws_vpc_security_group_ingress_rule" "eks_api_additional" {
 resource "aws_vpc_security_group_ingress_rule" "eks_nodes_nodeport_dev" {
   count = length(local.all_allowed_cidrs) > 0 ? 1 : 0
 
-  security_group_id = aws_security_group.ordering_eks_node_sg.id
+  security_group_id = aws_security_group.eks_node_sg.id
   cidr_ipv4         = local.deployer_cidr
   from_port         = 30000
   to_port           = 32767
@@ -252,7 +252,7 @@ resource "aws_vpc_security_group_ingress_rule" "nlb_dev" {
 ############################
 
 resource "aws_vpc_security_group_egress_rule" "eks_cluster_egress" {
-  security_group_id = aws_security_group.ordering_eks_cluster_sg.id
+  security_group_id = aws_security_group.eks_cluster_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 
@@ -260,7 +260,7 @@ resource "aws_vpc_security_group_egress_rule" "eks_cluster_egress" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "eks_node_egress" {
-  security_group_id = aws_security_group.ordering_eks_node_sg.id
+  security_group_id = aws_security_group.eks_node_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 

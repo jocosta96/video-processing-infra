@@ -4,73 +4,73 @@ locals {
   }
 }
 
-resource "aws_vpc" "ordering_vpc" {
+resource "aws_vpc" "vpc" {
   tags                 = local.network_tags
   cidr_block           = var.VPC_CIDR_BLOCK
   enable_dns_hostnames = true
   enable_dns_support   = true
 }
 
-resource "aws_subnet" "ordering_subnet" {
+resource "aws_subnet" "subnet" {
   tags                    = local.network_tags
   count                   = var.SUBNET_COUNT
-  vpc_id                  = aws_vpc.ordering_vpc.id
+  vpc_id                  = aws_vpc.vpc.id
   cidr_block              = cidrsubnet(var.VPC_CIDR_BLOCK, 4, count.index)
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
   availability_zone       = var.AVAILABILITY_ZONES[count.index]
 }
 
 resource "aws_subnet" "database_subnet" {
   tags                    = local.network_tags
   count                   = 2
-  vpc_id                  = aws_vpc.ordering_vpc.id
+  vpc_id                  = aws_vpc.vpc.id
   cidr_block              = cidrsubnet(var.VPC_CIDR_BLOCK, 4, 15 - count.index) #total subnets is 16, going on reversal order
   availability_zone       = var.AVAILABILITY_ZONES[count.index]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 }
 
-resource "aws_db_subnet_group" "ordering_data_subnet_group" {
+resource "aws_db_subnet_group" "data_subnet_group" {
   name       = "${var.service}-subnet-group"
   subnet_ids = aws_subnet.database_subnet[*].id
 
   tags = local.network_tags
 }
 
-resource "aws_internet_gateway" "ordering_igw" {
+resource "aws_internet_gateway" "igw" {
   tags   = local.network_tags
-  vpc_id = aws_vpc.ordering_vpc.id
+  vpc_id = aws_vpc.vpc.id
 }
 
-resource "aws_route_table" "ordering_route_table" {
+resource "aws_route_table" "route_table" {
   tags   = local.network_tags
-  vpc_id = aws_vpc.ordering_vpc.id
+  vpc_id = aws_vpc.vpc.id
   route {
-    cidr_block = aws_vpc.ordering_vpc.cidr_block
+    cidr_block = aws_vpc.vpc.cidr_block
     gateway_id = "local"
   }
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.ordering_igw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
 }
 
-resource "aws_route_table_association" "ordering_route_table_association" {
+resource "aws_route_table_association" "route_table_association" {
   count          = var.SUBNET_COUNT
-  subnet_id      = aws_subnet.ordering_subnet[count.index].id
-  route_table_id = aws_route_table.ordering_route_table.id
+  subnet_id      = aws_subnet.subnet[count.index].id
+  route_table_id = aws_route_table.route_table.id
 }
 
 # Private route table for database subnets (no Internet Gateway route)
-resource "aws_route_table" "ordering_private_route_table" {
+resource "aws_route_table" "private_route_table" {
   tags   = local.network_tags
-  vpc_id = aws_vpc.ordering_vpc.id
+  vpc_id = aws_vpc.vpc.id
   route {
-    cidr_block = aws_vpc.ordering_vpc.cidr_block
+    cidr_block = aws_vpc.vpc.cidr_block
     gateway_id = "local"
   }
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.ordering_igw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
   # No route to Internet Gateway - database subnets are private
 }
@@ -80,5 +80,5 @@ resource "aws_route_table" "ordering_private_route_table" {
 resource "aws_route_table_association" "database_route_table_association" {
   count          = 2
   subnet_id      = aws_subnet.database_subnet[count.index].id
-  route_table_id = aws_route_table.ordering_private_route_table.id
+  route_table_id = aws_route_table.private_route_table.id
 }
