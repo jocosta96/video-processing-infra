@@ -9,7 +9,7 @@ resource "aws_ssm_parameter" "shared_database_host" {
   name        = "/video-processing/${var.service}/database/host"
   description = "Database host endpoint for cross-repository integration"
   type        = "String"
-  value       = aws_db_instance.database.address
+  value       = aws_db_instance.ordering_database.address
   overwrite   = true
 
   tags = local.secret_tags
@@ -19,7 +19,7 @@ resource "aws_ssm_parameter" "shared_database_port" {
   name        = "/video-processing/${var.service}/database/port"
   description = "Database port for cross-repository integration"
   type        = "String"
-  value       = tostring(aws_db_instance.database.port)
+  value       = tostring(aws_db_instance.ordering_database.port)
   overwrite   = true
 
   tags = local.secret_tags
@@ -29,7 +29,7 @@ resource "aws_ssm_parameter" "shared_database_name" {
   name        = "/video-processing/${var.service}/database/name"
   description = "Database name for cross-repository integration"
   type        = "String"
-  value       = aws_db_instance.database.db_name
+  value       = aws_db_instance.ordering_database.db_name
   overwrite   = true
 
   tags = local.secret_tags
@@ -39,7 +39,7 @@ resource "aws_ssm_parameter" "shared_database_username" {
   name        = "/video-processing/${var.service}/database/username"
   description = "Database username for cross-repository integration"
   type        = "String"
-  value       = aws_db_instance.database.username
+  value       = aws_db_instance.ordering_database.username
   overwrite   = true
 
   tags = local.secret_tags

@@ -6,7 +6,7 @@ locals {
   }
 }
 
-resource "aws_eks_cluster" "eks_cluster" {
+resource "aws_eks_cluster" "ordering_eks_cluster" {
 
   name     = "${var.service}-eks-cluster"
   version  = "1.32"
@@ -21,8 +21,8 @@ resource "aws_eks_cluster" "eks_cluster" {
   vpc_config {
     subnet_ids = var.SUBNET_IDS
     security_group_ids = [
-      aws_security_group.eks_cluster_sg.id,
-      aws_security_group.eks_node_sg.id
+      aws_security_group.ordering_eks_cluster_sg.id,
+      aws_security_group.ordering_eks_node_sg.id
     ]
     endpoint_private_access = true
     endpoint_public_access  = length(local.all_allowed_cidrs) > 0
@@ -36,9 +36,9 @@ resource "aws_eks_cluster" "eks_cluster" {
 
 
 
-resource "aws_eks_node_group" "eks_node_group" {
+resource "aws_eks_node_group" "ordering_eks_node_group" {
   tags            = local.eks_tags
-  cluster_name    = aws_eks_cluster.eks_cluster.name
+  cluster_name    = aws_eks_cluster.ordering_eks_cluster.name
   node_group_name = "${var.service}-eks-node-group"
   node_role_arn   = data.aws_iam_role.lab_role.arn
   subnet_ids      = var.SUBNET_IDS
@@ -61,13 +61,13 @@ resource "aws_eks_node_group" "eks_node_group" {
     ec2_ssh_key = var.key_pair_name
     source_security_group_ids = [
       var.bastion_security_group_id,
-      aws_security_group.eks_node_sg.id
+      aws_security_group.ordering_eks_node_sg.id
     ]
   }
 
 
   # Aguardar cluster estar pronto
-  depends_on = [aws_eks_cluster.eks_cluster]
+  depends_on = [aws_eks_cluster.ordering_eks_cluster]
 }
 
 
