@@ -160,7 +160,7 @@ resource "aws_vpc_security_group_ingress_rule" "nlb_to_eks_cluster" {
 }
 
 # BASTION > EKS CLUSTER (EKS-managed security group)
-resource "aws_vpc_security_group_ingress_rule" "nlb_to_eks_cluster" {
+resource "aws_vpc_security_group_ingress_rule" "bastion_to_eks_cluster" {
   security_group_id            = local.eks_managed_sg
   referenced_security_group_id = var.bastion_security_group_id
   ip_protocol                  = "-1"
