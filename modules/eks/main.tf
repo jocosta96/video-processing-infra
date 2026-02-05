@@ -2,7 +2,7 @@
 
 locals {
   eks_tags = {
-    origin = "tc-micro-service-4/modules/eks/main.tf"
+    origin = "video-processing-infra/modules/eks/main.tf"
   }
 }
 

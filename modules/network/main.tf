@@ -1,6 +1,6 @@
 locals {
   network_tags = {
-    origin = "tc-micro-service-4/modules/network/main.tf"
+    origin = "video-processing-infra/modules/network/main.tf"
   }
 }
 
@@ -16,7 +16,7 @@ resource "aws_subnet" "subnet" {
   count                   = var.SUBNET_COUNT
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = cidrsubnet(var.VPC_CIDR_BLOCK, 4, count.index)
-  map_public_ip_on_launch = false
+  map_public_ip_on_launch = true
   availability_zone       = var.AVAILABILITY_ZONES[count.index]
 }
 

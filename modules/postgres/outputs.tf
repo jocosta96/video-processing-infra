@@ -15,7 +15,7 @@ output "database_name" {
 
 output "ssm_path_prefix" {
   description = "SSM Parameter Store path prefix for database credentials"
-  value       = "/video-processing/${var.service}/database"
+  value       = "${var.service}/database"
 }
 
 output "database_security_group_id" {

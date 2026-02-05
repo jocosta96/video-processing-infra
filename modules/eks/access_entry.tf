@@ -2,7 +2,7 @@
 
 locals {
   access_entry_tags = {
-    origin = "tc-micro-service-4/modules/eks/access_entry.tf"
+    origin = "video-processing-infra/modules/eks/access_entry.tf"
   }
 }
 

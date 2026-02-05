@@ -1,12 +1,12 @@
 locals {
   secret_tags = {
-    origin = "tc-micro-service-4/modules/database/secrets.tf"
+    origin = "video-processing-infra/modules/database/secrets.tf"
   }
 }
 
 # Database configuration parameters
 resource "aws_ssm_parameter" "shared_database_host" {
-  name        = "/video-processing/${var.service}/database/host"
+  name        = "${var.service}/database/host"
   description = "Database host endpoint for cross-repository integration"
   type        = "String"
   value       = aws_db_instance.database.address
@@ -16,7 +16,7 @@ resource "aws_ssm_parameter" "shared_database_host" {
 }
 
 resource "aws_ssm_parameter" "shared_database_port" {
-  name        = "/video-processing/${var.service}/database/port"
+  name        = "${var.service}/database/port"
   description = "Database port for cross-repository integration"
   type        = "String"
   value       = tostring(aws_db_instance.database.port)
@@ -26,7 +26,7 @@ resource "aws_ssm_parameter" "shared_database_port" {
 }
 
 resource "aws_ssm_parameter" "shared_database_name" {
-  name        = "/video-processing/${var.service}/database/name"
+  name        = "${var.service}/database/name"
   description = "Database name for cross-repository integration"
   type        = "String"
   value       = aws_db_instance.database.db_name
@@ -36,7 +36,7 @@ resource "aws_ssm_parameter" "shared_database_name" {
 }
 
 resource "aws_ssm_parameter" "shared_database_username" {
-  name        = "/video-processing/${var.service}/database/username"
+  name        = "${var.service}/database/username"
   description = "Database username for cross-repository integration"
   type        = "String"
   value       = aws_db_instance.database.username
@@ -46,7 +46,7 @@ resource "aws_ssm_parameter" "shared_database_username" {
 }
 
 resource "aws_ssm_parameter" "shared_database_password" {
-  name        = "/video-processing/${var.service}/database/password"
+  name        = "${var.service}/database/password"
   description = "Database password for cross-repository integration"
   type        = "SecureString"
   value       = random_password.db_password.result

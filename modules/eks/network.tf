@@ -12,7 +12,7 @@ data "aws_eks_cluster" "cluster" {
 
 locals {
   network_tags = {
-    origin = "tc-micro-service-4/modules/eks/network.tf"
+    origin = "video-processing-infra/modules/eks/network.tf"
   }
 
   eks_managed_sg = data.aws_eks_cluster.cluster.vpc_config[0].cluster_security_group_id

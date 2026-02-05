@@ -4,7 +4,7 @@ data "http" "my_ip" {
 
 locals {
   bastion_tags = {
-    origin = "tc-micro-service-4/modules/bastion/main.tf"
+    origin = "video-processing-infra/modules/bastion/main.tf"
   }
 
   deployer_cidr = length(var.allowed_ip_cidrs) > 0 ? var.allowed_ip_cidrs[0] : "${chomp(data.http.my_ip.response_body)}/32"
@@ -112,7 +112,7 @@ resource "aws_key_pair" "bastion_key_pair" {
 }
 
 resource "aws_ssm_parameter" "bastion_public_ip" {
-  name  = "/video-processing/${var.service}/bastion/public_ip"
+  name  = "${var.service}/bastion/public_ip"
   type  = "String"
   value = aws_instance.bastion.public_ip
 }

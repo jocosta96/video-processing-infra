@@ -27,7 +27,7 @@ resource "aws_ecr_repository" "service" {
 }
 
 resource "aws_ssm_parameter" "ecr_url" {
-  name        = "/video-processing/${var.service}/ecr/url"
+  name        = "${var.service}/ecr/url"
   description = "ecr repo url"
   type        = "String"
   value       = aws_ecr_repository.service.repository_url

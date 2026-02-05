@@ -33,7 +33,7 @@ variable "db_engine_version" {
 variable "db_name" {
   description = "The name of the database"
   type        = string
-  default     = "system"
+  default     = "video-processing"
 }
 
 variable "db_username" {

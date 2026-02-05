@@ -1,6 +1,6 @@
 locals {
   network_tags = {
-    origin = "tc-micro-service-4/modules/database/network.tf"
+    origin = "video-processing-infra/modules/database/network.tf"
   }
 }
 

@@ -1,6 +1,6 @@
 locals {
   database_tags = {
-    origin = "tc-micro-service-4/modules/database/main.tf"
+    origin = "video-processing-infra/modules/database/main.tf"
   }
 }
 

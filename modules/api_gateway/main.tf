@@ -1,5 +1,5 @@
 locals {
-  api_gateway_tags = { "origin" : "tc-micro-service-4/modules/api_gateway/main.tf" }
+  api_gateway_tags = { "origin" : "video-processing-infra/modules/api_gateway/main.tf" }
 }
 
 
@@ -50,7 +50,7 @@ resource "aws_api_gateway_stage" "api_stage" {
 }
 
 resource "aws_ssm_parameter" "api_gateway_url" {
-  name        = "/video-processing/${var.service}/apigateway/url"
+  name        = "${var.service}/apigateway/url"
   description = "API Gateway URL for ${var.service} service"
   type        = "String"
   value       = aws_api_gateway_stage.api_stage.invoke_url

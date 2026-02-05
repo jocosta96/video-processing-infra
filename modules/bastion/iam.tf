@@ -1,6 +1,6 @@
 locals {
   iam_tags = {
-    origin = "tc-micro-service-4/modules/bastion/iam.tf"
+    origin = "video-processing-infra/modules/bastion/iam.tf"
   }
 }
 
