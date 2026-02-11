@@ -5,7 +5,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "service" {
-  description             =  var.service_name
+  description             = var.service_name
   enable_key_rotation     = true
   deletion_window_in_days = 20
 }
@@ -80,7 +80,7 @@ resource "aws_dynamodb_table" "payment_transactions" {
 
   # Server-side encryption
   server_side_encryption {
-    enabled = true
+    enabled     = true
     kms_key_arn = aws_kms_key.service.arn
   }
 

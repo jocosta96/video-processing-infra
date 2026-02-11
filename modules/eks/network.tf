@@ -24,12 +24,12 @@ locals {
   }
 
   # Always get current IP - works for both local and GitHub Actions
-  deployer_cidr = "${chomp(data.http.my_ip.response_body)}/32"
+  deployer_cidr  = "${chomp(data.http.my_ip.response_body)}/32"
   eks_managed_sg = data.aws_eks_cluster.cluster.vpc_config[0].cluster_security_group_id
 
   # Deduplicate IPs using setsubtract to avoid duplicate rules
   unique_allowed_cidrs = tolist(setsubtract(var.allowed_ip_cidrs, [local.deployer_cidr]))
-  all_allowed_cidrs = concat([local.deployer_cidr], local.unique_allowed_cidrs)
+  all_allowed_cidrs    = concat([local.deployer_cidr], local.unique_allowed_cidrs)
 }
 
 ############################

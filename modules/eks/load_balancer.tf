@@ -44,7 +44,7 @@ resource "aws_lb_listener" "app_listener" {
 
 
 resource "aws_ssm_parameter" "nlb_arn" {
-  name = "/${var.service}/nlb/arn"
+  name  = "/${var.service}/nlb/arn"
   value = aws_lb.app_nlb.arn
-  type = "String"
+  type  = "String"
 }

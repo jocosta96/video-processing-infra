@@ -1,8 +1,8 @@
 #mirror and cache Docker Hub images in ECR for faster pulls and reduced external dependencies
 
 locals {
-  ecr_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.region}.amazonaws.com"
-  prefix  = "dockerhub/${var.service}"
+  ecr_url  = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.region}.amazonaws.com"
+  prefix   = "dockerhub/${var.service}"
   ecr_tags = merge({ repository = local.prefix })
 }
 

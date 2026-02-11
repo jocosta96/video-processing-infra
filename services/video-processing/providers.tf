@@ -43,7 +43,7 @@ data "aws_eks_cluster" "cluster" {
 }
 
 data "aws_eks_cluster_auth" "auth" {
-  name       = module.eks.name
+  name = module.eks.name
 }
 
 provider "time" {}
