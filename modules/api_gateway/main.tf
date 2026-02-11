@@ -50,7 +50,7 @@ resource "aws_api_gateway_stage" "api_stage" {
 }
 
 resource "aws_ssm_parameter" "api_gateway_url" {
-  name        = "${var.service}/apigateway/url"
+  name        = "/${var.service}/apigateway/url"
   description = "API Gateway URL for ${var.service} service"
   type        = "String"
   value       = aws_api_gateway_stage.api_stage.invoke_url

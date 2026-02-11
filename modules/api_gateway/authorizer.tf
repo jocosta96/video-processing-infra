@@ -4,7 +4,7 @@ resource "random_password" "valid_token" {
 }
 
 resource "aws_ssm_parameter" "valid_token_ssm" {
-  name        = "${var.service}/apigateway/token"
+  name        = "/${var.service}/apigateway/token"
   description = "Valid token for integration"
   type        = "SecureString"
   value       = random_password.valid_token.result

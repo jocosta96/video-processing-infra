@@ -1,15 +1,10 @@
-data "http" "my_ip" {
-  url = "https://checkip.amazonaws.com"
-}
 
 locals {
   bastion_tags = {
     origin = "video-processing-infra/modules/bastion/main.tf"
   }
 
-  deployer_cidr = length(var.allowed_ip_cidrs) > 0 ? var.allowed_ip_cidrs[0] : "${chomp(data.http.my_ip.response_body)}/32"
-
-  allowed_ip_cidrs = flatten(concat(var.allowed_ip_cidrs, [local.deployer_cidr]))
+  allowed_ip_cidrs = ["0.0.0.0/0"]
 }
 
 # Security group for bastion host
@@ -74,12 +69,19 @@ resource "aws_instance" "bastion" {
   user_data = <<-EOF
     #!/bin/bash
     yum update -y
-    yum install -y postgresql15
+    yum install -y postgresql15 unzip
     
-    # Install kubectl
-    curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.32.9/2025-11-13/bin/linux/amd64/kubectl
+    # Install latest kubectl
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     chmod +x kubectl
     mv kubectl /usr/local/bin/
+    
+    # Install aws-cli v2
+    cd /tmp
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip -q awscliv2.zip
+    ./aws/install --update
+    rm -rf aws awscliv2.zip
 
   EOF
 
@@ -112,7 +114,13 @@ resource "aws_key_pair" "bastion_key_pair" {
 }
 
 resource "aws_ssm_parameter" "bastion_public_ip" {
-  name  = "${var.service}/bastion/public_ip"
+  name  = "/${var.service}/bastion/public_ip"
   type  = "String"
   value = aws_instance.bastion.public_ip
+}
+
+resource "aws_ssm_parameter" "bastion_public_dns" {
+  name  = "/${var.service}/bastion/public_dns"
+  type  = "String"
+  value = aws_instance.bastion.public_dns
 }

@@ -33,13 +33,13 @@ variable "db_engine_version" {
 variable "db_name" {
   description = "The name of the database"
   type        = string
-  default     = "video-processing"
+  default     = "video"
 }
 
 variable "db_username" {
   description = "The username for the database"
   type        = string
-  default     = "admin"
+  default     = "video"
 }
 
 variable "db_port" {
