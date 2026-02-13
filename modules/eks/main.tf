@@ -44,7 +44,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   subnet_ids      = var.SUBNET_IDS
   instance_types  = [var.NODE_INSTANCE_TYPE] # Mudança: t3.small em vez de t2.micro
   capacity_type   = "ON_DEMAND"              # Mudança: ON_DEMAND em vez de SPOT
-  disk_size       = 20
+  disk_size       = 100
   ami_type        = var.NODE_AMI_TYPE # Especificar AMI type explicitamente
 
   scaling_config {

@@ -63,12 +63,13 @@ module "eks" {
   NODE_INSTANCE_TYPE  = "t3a.2xlarge"
   allowed_ip_cidrs    = var.allowed_ip_cidrs
   SCALING_CONFIG = {
-    desired_size = 1
+    desired_size = 2
     max_size     = 5
-    min_size     = 1
+    min_size     = 2
   }
   key_pair_name             = var.ssh_key_pair_name
   bastion_security_group_id = module.bastion.security_group_id
+  
 }
 
 module "api_gateway" {
