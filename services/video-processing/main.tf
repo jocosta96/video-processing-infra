@@ -60,11 +60,11 @@ module "eks" {
   allow_public_access = false
   VPC_ID              = module.network.service_vpc_id
   SUBNET_IDS          = module.network.service_subnet_ids
-  NODE_INSTANCE_TYPE  = "t3.small"
+  NODE_INSTANCE_TYPE  = "t3a.2xlarge"
   allowed_ip_cidrs    = var.allowed_ip_cidrs
   SCALING_CONFIG = {
     desired_size = 1
-    max_size     = 3
+    max_size     = 5
     min_size     = 1
   }
   key_pair_name             = var.ssh_key_pair_name

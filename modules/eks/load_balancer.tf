@@ -44,7 +44,15 @@ resource "aws_lb_listener" "app_listener" {
 
 
 resource "aws_ssm_parameter" "nlb_arn" {
-  name  = "/${var.service}/nlb/arn"
+  name  = "/${var.service}/nlb_tg/arn"
   value = aws_lb.app_nlb.arn
   type  = "String"
+  overwrite = true
+}
+
+resource "aws_ssm_parameter" "nlb_tg_arn" {
+  name  = "/${var.service}/nlb_tg/arn"
+  value = aws_lb_target_group.app_tg.arn
+  type  = "String"
+  overwrite = true
 }
